@@ -69,32 +69,39 @@ void mergeSort(int array[], int left, int right){
 }
 
 
-int main(){
+int main() {
+    int array[100];
+    int a = 0;  // contador de elementos
+    int num;
 
-    int array[] = {38,27,43,3,9,82,10,55,1,7,87,65,17};
-    int array_size = sizeof(array) / sizeof(array[0]);
-    
-    printf("---- Array antes do Merge ----\n");
-    printf("\n");  
-    for (int i = 0; i < array_size; i++){
+    printf("Digite os numeros para realizar o Merge Sort (-1 para sair):\n");
+
+    while (1) {
+        printf("Numero %d: ", a + 1);
+        scanf("%d", &num);
+        if (num == -1){
+        	break;
+		}
+        array[a] = num;
+        a++;
+    }
+
+    int array_size = a;  // número real de elementos inseridos
+
+    printf("\n---- Array antes do Merge ----\n");
+    for (int i = 0; i < array_size; i++) {
         printf("%d ", array[i]);
-	}
+    }
     printf("\n");
     
-	printf("\n---- Analise da mesclagem ----\n");
-
+    printf("\n---- Analise da mesclagem ----\n");
     mergeSort(array, 0, array_size - 1);
     	
-    int i;
-    
-    printf("\n");  
-    printf("---- Array ordenada por mergeSort ---- \n");
-    printf("\n");
-    for (i = 0; i < array_size; i++){
-    	printf("%d ", array[i]);
-	}
+    printf("\n---- Array ordenado por Merge Sort ----\n");
+    for (int i = 0; i < array_size; i++) {
+        printf("%d ", array[i]);
+    }
     printf("\n");
     
     return 0;
 }
-
