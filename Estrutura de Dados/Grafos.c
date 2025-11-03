@@ -1,94 +1,93 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Definição de valores booleanos
 #define true 1 
 #define false 0
 
-// Tipo para peso das arestas
+//* DefiniÃ§Ã£o de tipos para peso(aresta) e booleano
 typedef int TIPOPESO;
-
-// Tipo booleano customizado
 typedef int booll;
 
-// Estrutura para representar uma adjacência (aresta)
+//todo Estrutura para representar uma adjacÃªncia (aresta) 
 typedef struct adjacencia {
-    int vertice;            // índice do vértice de destino
-    TIPOPESO peso;          // peso da aresta
-    struct adjacencia *prox; // ponteiro para a próxima adjacência (lista ligada)
+    int vertice;            //* Ã­ndice do vÃ©rtice de destino 
+    TIPOPESO peso;          //* peso da aresta 
+    struct adjacencia *prox; //* prÃ³ximo elemento da lista encadeada 
 } ADJACENCIA;
 
-// Estrutura que representa um vértice
+//todo Estrutura que representa um vÃ©rtice (apenas a cabeÃ§a da lista) 
 typedef struct vertice {
-    ADJACENCIA *cab; // cabeça da lista de adjacências do vértice
+    ADJACENCIA *cab; //* ponteiro para a cabeÃ§a da lista de adjacÃªncia 
 } VERTICE;
 
-// Estrutura do grafo
+//todo Estrutura do grafo com nÃºmero de vÃ©rtices, arestas e vetor de vÃ©rtices 
 typedef struct grafo {
-    int vertices;   // número de vértices
-    int arestas;    // número de arestas
-    VERTICE *adj;   // vetor de vértices (cada vértice tem lista de adjacência)
+    int vertices;   //* nÃºmero de vÃ©rtices 
+    int arestas;    //* nÃºmero de arestas 
+    VERTICE *adj;   //* vetor de vÃ©rtices (cada um com sua lista de adjacÃªncia) 
 } GRAFO;
 
-// Função para criar um grafo com 'v' vértices
+//todo Cria um grafo com 'v' vÃ©rtices.
+//*   Aloca a estrutura GRAFO e o vetor de VERTICE, inicializando listas vazias. 
 GRAFO *criaGrafo(int v){
-    GRAFO *g = (GRAFO *) malloc(sizeof(GRAFO)); // aloca memória para o grafo
-    g->vertices = v;      // define número de vértices
-    g->arestas = 0;       // inicialmente não há arestas
-    g->adj = (VERTICE *) malloc(v * sizeof(VERTICE)); // aloca vetor de vértices
+    GRAFO *g = (GRAFO *) malloc(sizeof(GRAFO)); //* aloca memÃ³ria para o grafo 
+    g->vertices = v;      //* define nÃºmero de vÃ©rtices 
+    g->arestas = 0;       //* inicialmente nÃ£o hÃ¡ arestas
+    g->adj = (VERTICE *) malloc(v * sizeof(VERTICE)); //* aloca vetor de vÃ©rtices 
     
-    // Inicializa cada lista de adjacência como vazia
+    //? Inicializa cada lista de adjacÃªncia como vazia (NULL) 
     for(int i = 0; i < v; i++){
         g->adj[i].cab = NULL;
     }
 
-    return g; // retorna o ponteiro para o grafo criado
+    return g; //* retorna o ponteiro para o grafo criado 
 }
 
-// Função para criar uma nova adjacência (aresta)
+//todo Cria uma nova adjacÃªncia (nÃ³ da lista) para o vÃ©rtice 'v' com peso 'peso' 
 ADJACENCIA *criaAdj(int v, int peso){
-    ADJACENCIA *temp = (ADJACENCIA*) malloc(sizeof(ADJACENCIA)); // aloca memória
-    temp->vertice = v;     // define o vértice de destino
-    temp->peso = peso;     // define o peso da aresta
-    temp->prox = NULL;     // próximo da lista inicialmente nulo
-    return temp;           // retorna a nova adjacência
+    ADJACENCIA *temp = (ADJACENCIA*) malloc(sizeof(ADJACENCIA)); //* aloca nÃ³ 
+    temp->vertice = v;     //* define vÃ©rtice de destino 
+    temp->peso = peso;     //* define o peso da aresta 
+    temp->prox = NULL;     //* prÃ³ximo inicialmente NULL 
+    return temp;           //* retorna a nova adjacÃªncia 
 }
 
-// Função para criar uma aresta de vi -> vf com peso p
+//todo Insere uma aresta do vÃ©rtice vi para vf com peso p.
+//* A inserÃ§Ã£o Ã© feita no inÃ­cio da lista de adjacÃªncia de vi. 
 booll criaAresta(GRAFO *gr, int vi, int vf, TIPOPESO p){
-    if (!gr) return false;                     // verifica se o grafo existe
-    if ((vf < 0) || (vf >= gr->vertices)) return false; // verifica limites do vértice destino
-    if ((vi < 0) || (vi >= gr->vertices)) return false; // verifica limites do vértice origem
+    if (!gr) return false;                     //* verifica se o grafo existe 
+    if ((vf < 0) || (vf >= gr->vertices)) return false; //* valida destino 
+    if ((vi < 0) || (vi >= gr->vertices)) return false; //* valida origem 
     
-    // Cria uma nova adjacência e adiciona no início da lista de adjacência
+    //* cria novo nÃ³ e insere no inÃ­cio da lista de adjacÃªncia
     ADJACENCIA *novo = criaAdj(vf, p);
-    novo->prox = gr->adj[vi].cab; // aponta para o primeiro elemento atual da lista
-    gr->adj[vi].cab = novo;       // atualiza a cabeça da lista
-    gr->arestas++;                // incrementa contador de arestas
-    return true;                  // sucesso
+    novo->prox = gr->adj[vi].cab; //* aponta para o primeiro elemento atual 
+    gr->adj[vi].cab = novo;       //* atualiza cabeÃ§a da lista 
+    gr->arestas++;                //* incrementa contador de arestas 
+    return true;                  //* sucesso 
 }
 
-// Função para imprimir o grafo
+//todo Imprime o grafo: nÃºmero de vÃ©rtices, arestas e as listas de adjacÃªncia 
 void imprime(GRAFO *gr){
     printf("Vertices: %d. Arestas %d.\n", gr->vertices, gr->arestas);
     
-    // Percorre cada vértice
+    //? percorre cada vÃ©rtice e imprime sua lista de adjacÃªncia 
     for(int i = 0; i < gr->vertices; i++){
         printf("v%d: ", i);
-        ADJACENCIA *ad = gr->adj[i].cab; // percorre a lista de adjacência
+        ADJACENCIA *ad = gr->adj[i].cab; //* percorre a lista encadeada 
         while(ad){
-            printf("v%d(%d) ", ad->vertice, ad->peso); // imprime vértice de destino e peso
-            ad = ad->prox; // vai para próxima adjacência
+            printf("v%d(%d) ", ad->vertice, ad->peso); //* imprime destino e peso 
+            ad = ad->prox; //* avanÃ§a na lista 
         }
         printf("\n");
     }   
 }
 
-// Função principal: cria grafo, adiciona arestas e imprime
+//todo FunÃ§Ã£o principal: cria um grafo, adiciona arestas de exemplo e imprime 
 int main(void){
-    GRAFO *gr = criaGrafo(5); // cria grafo com 5 vértices
+    GRAFO *gr = criaGrafo(5); //* cria grafo com 5 vÃ©rtices 
     
-    // Adiciona arestas (origem, destino, peso)
+    //? adiciona arestas (origem, destino, peso) 
     criaAresta(gr, 0, 1, 2);
     criaAresta(gr, 1, 2, 4);
     criaAresta(gr, 2, 0, 12);
@@ -96,9 +95,9 @@ int main(void){
     criaAresta(gr, 3, 1, 3);
     criaAresta(gr, 4, 3, 8);
     
-    // Imprime o grafo
+    //? imprime o grafo 
     imprime(gr);
 
-    return 0; // finaliza o programa
+    return 0; //* finaliza o programa 
 }
 
