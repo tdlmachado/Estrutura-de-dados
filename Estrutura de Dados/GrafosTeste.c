@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <locale.h>
 
 #define true 1 
 #define false 0
@@ -70,14 +71,14 @@ booll criaAresta(GRAFO *gr, int vi, int vf, TIPOPESO p){
 
 //todo Imprime o grafo: número de vértices, arestas e as listas de adjacência 
 void imprime(GRAFO *gr){
-    printf("Vertices: %d. Arestas %d.\n", gr->vertices, gr->arestas);
+    printf("\nVertices: %d. Arestas %d.\n\n", gr->vertices, gr->arestas);
     
     //? percorre cada vértice e imprime sua lista de adjacência 
     for(int i = 0; i < gr->vertices; i++){
-        printf("v%d - se relaciona com: ", i);
+        printf("v%d ->  relaciona com: ", i);
         ADJACENCIA *ad = gr->adj[i].cab; //* percorre a lista encadeada 
         while(ad){
-            printf("v%d(%d) ", ad->vertice, ad->peso); //* imprime destino e peso 
+            printf("v%d  ", ad->vertice); //* imprime destino
             ad = ad->prox; //* avança na lista 
         }
         printf("\n");
@@ -91,17 +92,24 @@ void imprimeCaixaVertice(GRAFO *gr, int s){
     char lines[64][64];
     int nlines = 0;
 
+    char connections[256] = "";  
     if (!ad){
         snprintf(lines[nlines++], sizeof(lines[0]), "v%d -> (none)", s);
     } else {
-        int idx = 0;
+        char temp[64];
+        int first = 1;
+        snprintf(connections, sizeof(connections), "v%d -> ", s);
+        
         for(; ad; ad = ad->prox){
-            if (idx == 0)
-                snprintf(lines[nlines++], sizeof(lines[0]), "v%d -> v%d", s, ad->vertice);
-            else
-                snprintf(lines[nlines++], sizeof(lines[0]), "    -> v%d", ad->vertice);
-            idx++;
+            if (first) {
+                snprintf(temp, sizeof(temp), "v%d(peso:%d)", ad->vertice, ad->peso);
+                first = 0;
+            } else {
+                snprintf(temp, sizeof(temp), " -> v%d(peso:%d)", ad->vertice, ad->peso);
+            }
+            strcat(connections, temp);
         }
+        snprintf(lines[nlines++], sizeof(lines[0]), "%s", connections);
     }
 
     // calcula largura máxima
@@ -132,6 +140,7 @@ void imprimeCaixaVertice(GRAFO *gr, int s){
 
 //todo Função principal: cria um grafo, adiciona arestas de exemplo e imprime 
 int main(void){
+    setlocale(LC_ALL, "Portuguese"); // Configura o locale para português
     GRAFO *gr = criaGrafo(5); //* cria grafo com 5 vértices 
     
     //? adiciona arestas (origem, destino, peso) 
@@ -146,11 +155,11 @@ int main(void){
     //? imprime o grafo (lista de adjacência)
     imprime(gr);
 
-    // Imprime uma caixa para cada vértice mostrando vértice inicial e destinos
-    printf("\nCaixas por vértice:\n\n");
+    printf("\n+------------------+\n");
+    //? Imprime uma caixa para cada vértice mostrando vértice inicial e destinos
+    printf("\nCaixas por vertice e pesos:\n\n");
     for(int i = 0; i < gr->vertices; i++){
         imprimeCaixaVertice(gr, i);
-        printf("\n");
     }
 
     return 0; //* finaliza o programa 
